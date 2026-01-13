@@ -82,6 +82,16 @@ RUN npm ci --no-audit --no-fund \
     && npm run build \
     && rm -rf node_modules
 
+# Clear and optimize Laravel caches for production
+RUN php artisan config:clear \
+    && php artisan route:clear \
+    && php artisan view:clear \
+    && php artisan cache:clear \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php artisan optimize
+
 # Expose port 80
 EXPOSE 80
 
