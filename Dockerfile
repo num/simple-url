@@ -61,6 +61,10 @@ COPY docker/nginx/default.conf /etc/nginx/http.d/default.conf
 # Copy Supervisor configuration
 COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# Copy startup script
+COPY docker/startup.sh /usr/local/bin/startup.sh
+RUN chmod +x /usr/local/bin/startup.sh
+
 # Copy application files
 COPY . .
 
@@ -82,18 +86,10 @@ RUN npm ci --no-audit --no-fund \
     && npm run build \
     && rm -rf node_modules
 
-# Clear and optimize Laravel caches for production
-RUN php artisan config:clear \
-    && php artisan route:clear \
-    && php artisan view:clear \
-    && php artisan cache:clear \
-    && php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache \
-    && php artisan optimize
+# Note: Cache clearing is done automatically on container startup via startup.sh
 
 # Expose port 80
 EXPOSE 80
 
-# Start Supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Start via startup script (which clears cache then starts supervisor)
+CMD ["/usr/local/bin/startup.sh"]
