@@ -77,7 +77,7 @@ RUN mkdir -p storage/framework/cache \
 # Install PHP dependencies (include dev for now)
 RUN composer install --optimize-autoloader --no-interaction
 
-# Install Node.js dependencies and build Vite assets
+# Install Node.js dependencies and build Vite assets # force deploy
 RUN npm ci --no-audit --no-fund \
     && npm run build \
     && rm -rf node_modules
