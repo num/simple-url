@@ -35,6 +35,17 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
 
+Route::get('/xxx', function () {
+    Cache::put('test_key', 'Hello Redis Cache!', 3600);
+
+    // ดึงข้อมูล
+    $value = Cache::get('test_key');
+    $keys = Illuminate\Support\Facades\Redis::connection('cache')->keys('*');
+    var_dump($value);
+    var_dump($keys);
+    return "xxx";
+});
+
 Route::get('/{code}', [UrlController::class, 'fastRedirect']) //fastRedirect,slowRedirect
     ->where('code', '[a-zA-Z0-9]{6}')
     ->name('url.redirect');
